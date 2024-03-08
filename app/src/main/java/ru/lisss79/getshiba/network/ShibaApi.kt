@@ -1,4 +1,4 @@
-package ru.lisss79.getshiba
+package ru.lisss79.getshiba.network
 
 import retrofit2.Call
 import retrofit2.http.GET

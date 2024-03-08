@@ -1,9 +1,8 @@
-package ru.lisss79.getshiba
+package ru.lisss79.getshiba.network
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import retrofit2.Retrofit
-import java.io.FileInputStream
 import java.net.URL
 
 object NetUtils {

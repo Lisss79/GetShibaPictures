@@ -1,4 +1,4 @@
-package ru.lisss79.getshiba
+package ru.lisss79.getshiba.network
 
 import okhttp3.MediaType
 import okhttp3.RequestBody
