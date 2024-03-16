@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -106,13 +105,11 @@ fun ScreenSelector(maxPics: Int, context: Context) {
         if (screen == 1) {
             BaseScreen(maxPics = maxPics, onPicClick = onPicClick)
             (context as MainActivity).onBackPressedDispatcher.apply {
-                dispatchOnBackCancelled()
                 addCallback(goHome)
             }
         } else {
             ShowPicture(pic, context)
             (context as MainActivity).onBackPressedDispatcher.apply {
-                dispatchOnBackCancelled()
                 addCallback(goBack)
             }
         }
@@ -300,16 +297,24 @@ fun BaseScreen(maxPics: Int, onPicClick: (ImageBitmap) -> Unit) {
             Button(
                 onClick = {
                     loading = true
-                    //val scope = CoroutineScope(Dispatchers.IO)
                     scope1.launch(Dispatchers.IO) {
                         val urls = NetUtils.getLinks(quantity.value)
-                        val bitmaps = if (urls != null) {
-                            List(urls.size) { NetUtils.getBitmap(urls[it]) }
-                        } else listOf()
-                        PicturesRepository.bitmaps = bitmaps
-                        picState = bitmaps
-                        picsLoaded = true
-                        loading = false
+                        urls?.run {
+                            val bitmaps = mutableListOf<Bitmap>()
+                            forEach { url ->
+                                NetUtils.getBitmap(url)?.let { pic -> bitmaps.add(pic) }
+                            }
+                            PicturesRepository.bitmaps = bitmaps
+                            picState = bitmaps
+                            picsLoaded = true
+                            loading = false
+                        } ?: run {
+                            PicturesRepository.bitmaps = null
+                            picState = emptyList()
+                            picsLoaded = false
+                            loading = false
+                        }
+
                     }
                 },
                 Modifier.align(Alignment.BottomCenter)
